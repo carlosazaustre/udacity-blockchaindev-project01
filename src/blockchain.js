@@ -11,6 +11,7 @@
 const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./block.js');
 const bitcoinMessage = require('bitcoinjs-message');
+const FIVE_MINUTES = 5 * 60 * 1000;
 
 class Blockchain {
 
@@ -112,7 +113,24 @@ class Blockchain {
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
+            let messageTime = parseInt(message.split(':')[1]);
+            let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
+
+            if (!(currentTime - messageTime) > FIVE_MINUTES) {
+                reject(new Error('The time elapsed is less than 5 minutes'));
+            }
+
+            if (!bitcoinMessage.verify(message, address, signature)) {
+                reject(new Error('The message is not valid'));
+            }
+
+            let block = new BlockClass.Block({
+                address: address,
+                star: star
+            });
             
+            return resolve(self._addBlock(block));
+
         });
     }
 
