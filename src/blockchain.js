@@ -205,7 +205,22 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            
+            let previousHash = null;
+
+            self.chain.map(block => {
+                if (block.previousBlockHash !== previousHash) {
+                    errorLog.push(`The previous block hash is not valid.`);
+                    return resolve(errorLog);
+                }
+
+                let error = await block.validate();                
+                if (error) {
+                    errorLog.push(error);
+                }
+                previousHash = block.hash;
+            });
+
+            resolve(errorLog);
         });
     }
 
