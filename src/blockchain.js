@@ -11,6 +11,7 @@
 const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./block.js');
 const bitcoinMessage = require('bitcoinjs-message');
+const res = require('express/lib/response');
 const FIVE_MINUTES = 5 * 60 * 1000;
 
 class Blockchain {
@@ -146,7 +147,7 @@ class Blockchain {
             let blockToReturn = self.chain.filter(block => block.hash === hash);
             
             if (!blockToReturn.length === 1) {
-                reject(new Error('The block with the hash ' + hash + ' does not exist'));
+                resolve(null);
             }
 
             resolve(blockToReturn[0]);
@@ -180,7 +181,17 @@ class Blockchain {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
-            
+            self.chain.map(block => {
+                if (block.body.address === address) {
+                    stars.push(block.body.star);
+                };
+            });
+
+            if (stars.length > 0) {
+                resolve(stars);
+            } else {
+                resolve(null);
+            }
         });
     }
 
