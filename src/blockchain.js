@@ -130,7 +130,9 @@ class Blockchain {
                 star: star
             });
             
-            return resolve(self._addBlock(block));
+            let blockAdded = await self._addBlock(block);
+
+            resolve(blockAdded);
 
         });
     }
@@ -180,18 +182,24 @@ class Blockchain {
     getStarsByWalletAddress (address) {
         let self = this;
         let stars = [];
-        return new Promise((resolve, reject) => {
-            self.chain.map(block => {
-                if (block.body.address === address) {
-                    stars.push(block.body.star);
-                };
-            });
 
+        return new Promise(async (resolve, reject) => {
+            stars = self.chain.map(async block => {
+                let data = await block.getBData();
+
+                if (data.address === address) {
+                    return data;
+                }
+            });
+            
             if (stars.length > 0) {
+                stars = Promise.all(stars);
                 resolve(stars);
             } else {
                 resolve(null);
             }
+
+            
         });
     }
 
@@ -207,7 +215,7 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             let previousHash = null;
 
-            self.chain.map(block => {
+            self.chain.map(async block => {
                 if (block.previousBlockHash !== previousHash) {
                     errorLog.push(`The previous block hash is not valid.`);
                     return resolve(errorLog);

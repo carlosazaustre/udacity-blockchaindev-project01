@@ -100,9 +100,12 @@ class BlockchainController {
         this.app.get("/blocks/:address", async (req, res) => {
             if(req.params.address) {
                 const address = req.params.address;
+
                 try {
                     let stars = await this.blockchain.getStarsByWalletAddress(address);
-                    if(stars){
+
+                    if (stars){
+                        stars = stars.filter(star => star !== undefined);
                         return res.status(200).json(stars);
                     } else {
                         return res.status(404).send("Block Not Found!");
