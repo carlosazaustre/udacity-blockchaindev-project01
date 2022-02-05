@@ -145,11 +145,11 @@ class Blockchain {
         return new Promise((resolve, reject) => {
             let blockToReturn = self.chain.filter(block => block.hash === hash);
             
-            if (!blockToReturn) {
+            if (!blockToReturn.length === 1) {
                 reject(new Error('The block with the hash ' + hash + ' does not exist'));
             }
 
-            resolve(blockToReturn);
+            resolve(blockToReturn[0]);
         });
     }
 
