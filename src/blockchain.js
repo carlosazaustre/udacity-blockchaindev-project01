@@ -73,6 +73,12 @@ class Blockchain {
                block.previousBlockHash = self.chain[self.chain.length - 1].hash;
            }
 
+           let isValid = await self.validateChain();
+           
+           if (!isValid) {
+               reject(new Error('The chain is not valid'));
+           }
+
            block.hash = SHA256(JSON.stringify(block)).toString();
            self.chain.push(block);
            resolve(block);
@@ -213,19 +219,16 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            let previousHash = null;
-
             self.chain.map(async block => {
-                if (block.previousBlockHash !== previousHash) {
-                    errorLog.push(`The previous block hash is not valid.`);
-                    return resolve(errorLog);
-                }
-
-                let error = await block.validate();                
-                if (error) {
+                try {
+                    let isValid = await block.validate();                
+                    
+                    if (!isValid) {
+                        errorLog.push(new Error('Block is not valid'));
+                    }
+                } catch (error) {
                     errorLog.push(error);
                 }
-                previousHash = block.hash;
             });
 
             resolve(errorLog);
