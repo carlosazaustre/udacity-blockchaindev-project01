@@ -11,7 +11,6 @@
 const SHA256 = require("crypto-js/sha256");
 const BlockClass = require("./block.js");
 const bitcoinMessage = require("bitcoinjs-message");
-const res = require("express/lib/response");
 const FIVE_MINUTES = 5 * 60 * 1000;
 
 class Blockchain {

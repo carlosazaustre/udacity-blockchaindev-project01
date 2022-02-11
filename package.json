@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "dev": "NODE_ENV=development DEBUG=app* nodemon app.js"
   },
   "author": "Udacity - jose.morales@udacity.com",
   "license": "ISC",
@@ -19,6 +19,7 @@
     "morgan": "^1.9.1"
   },
   "devDependencies": {
+    "debug": "^4.3.3",
     "nodemon": "^2.0.15"
   }
 }
