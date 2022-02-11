@@ -13,6 +13,7 @@ const SHA256 = require("crypto-js/sha256");
 const hex2ascii = require("hex2ascii");
 
 class Block {
+
   // Constructor - argument data will be the object containing the transaction data
   constructor(data) {
     this.hash = null; // Hash of the block
@@ -41,9 +42,13 @@ class Block {
       let currentBlockHash = self.hash;
 
       // Recalculate the hash of the Block
-      let recalculatedHash = SHA256(JSON.stringify(self)).toString();
+      self.hash = SHA256(JSON.stringify({
+          ...self,
+          "hash": null,
+      })).toString();
+
       // Comparing if the hashes changed
-      if (currentBlockHash !== recalculatedHash) {
+      if (currentBlockHash !== self.hash) {
         // Returning the Block is not valid
         resolve(false);
       }
